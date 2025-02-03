@@ -21,5 +21,6 @@
         <mapping class="healthcare.model.Patient"/>
         <mapping class="healthcare.model.Doctor"/>
         <mapping class="healthcare.model.Appointment"/>
+        <mapping class="healthcare.model.Office"/>
     </session-factory>
 </hibernate-configuration>
