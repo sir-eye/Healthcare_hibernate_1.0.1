@@ -62,7 +62,7 @@ public class Main {
                         manageAppointments(appointmentService, scanner);
                         break;
                     case 4:
-                        manageOffices(officeService, scanner);
+                        manageOffices(officeService, doctorService, scanner);
                         break;
                     case 5:
                         System.out.println("Exiting...");
@@ -261,29 +261,6 @@ public class Main {
 
         switch (choice) {
             case 1:
-//                Appointment newAppointment = new Appointment();
-//                Doctor aptDoctor;
-//                Patient aptPatient;
-//                System.out.print("Enter Patient ID: ");
-//                aptPatient = patientService.getPatientById(scanner.nextInt());
-//                scanner.nextLine();
-//                System.out.print("Enter Doctor ID: ");
-//                aptDoctor = doctorService.getDoctorById(scanner.nextInt());
-//                scanner.nextLine();
-//                System.out.print("Enter Appointment Date: ");
-//                newAppointment.setAppointmentDate(scanner.nextLine());
-//                System.out.print("Enter Notes: ");
-//                newAppointment.setNotes(scanner.nextLine());
-//
-//                newAppointment.setPatient(aptPatient);
-//                newAppointment.setDoctor(aptDoctor);
-//
-//                doctorService.addPatientToDoctor(aptDoctor.getDoctorId(), aptPatient);
-//                patientService.addDoctorToPatient(aptPatient.getPatientId(), aptDoctor);
-//
-//                appointmentService.createAppointment(newAppointment);  // Use service here
-//                System.out.println("Appointment created successfully.");
-//                break;
                 Appointment newAppointment = new Appointment();
                 System.out.print("Enter patient ID: ");
                 Patient patient = new Patient();
@@ -358,7 +335,7 @@ public class Main {
     }
 
     // Manage Offices
-    private static void manageOffices(OfficeService officeService, Scanner scanner) {
+    private static void manageOffices(OfficeService officeService, DoctorService doctorService, Scanner scanner) {
         while (true) {
             System.out.println("\n************ Manage Offices ************");
             System.out.println("1. Create Office");
@@ -375,196 +352,113 @@ public class Main {
 
             switch (choice) {
                 case 1:
-                    //createOffice(officeService, doctorService, scanner);
-
+                    // Create Office
                     System.out.print("Enter Office Location: ");
                     String location = scanner.nextLine();
-                    System.out.print("Enter Office Phone: ");
+                    System.out.print("Enter Office Phone Number: ");
                     String phone = scanner.nextLine();
 
-                    System.out.print("Enter Doctor ID to assign this office: ");
+                    System.out.print("Enter Doctor ID to associate with Office: ");
                     int doctorId = scanner.nextInt();
-                    scanner.nextLine(); // Consume newline
+                    scanner.nextLine();
 
-
-                    Doctor doctor = null;
+                    Doctor doctor = doctorService.getDoctorById(doctorId);
                     if (doctor == null) {
-                        System.out.println("Doctor with ID " + doctorId + " not found. Cannot create office.");
-                        return;
+                        System.out.println("Doctor not found. Cannot assign office.");
+                        break;
                     }
 
-                    Office office = new Office();
-                    office.setLocation(location);
-                    office.setPhone(phone);
-                    office.setDoctor(doctor);
+                    Office newOffice = new Office();
+                    newOffice.setLocation(location);
+                    newOffice.setPhone(phone);
+                    newOffice.setDoctor(doctor);
 
-                    officeService.createOffice(office);
+                    officeService.createOffice(newOffice);
                     System.out.println("Office created successfully!");
-
                     break;
-                case 2:
-//                    readOffice(officeService, scanner);
 
+                case 2:
+                    // Read Office
                     System.out.print("Enter Office ID: ");
                     int officeId = scanner.nextInt();
-                    scanner.nextLine(); // Consume newline
+                    scanner.nextLine();
 
-                    office = officeService.getOfficeById(officeId);
+                    Office office = officeService.getOfficeById(officeId);
                     if (office != null) {
-                        System.out.println("🔍 Office Details:");
-                        System.out.println("ID: " + office.getOfficeId());
+                        System.out.println("Office ID: " + office.getOfficeId());
                         System.out.println("Location: " + office.getLocation());
                         System.out.println("Phone: " + office.getPhone());
-                        System.out.println("Assigned Doctor: " + (office.getDoctor() != null ? office.getDoctor().getFirstName() + " " + office.getDoctor().getLastName() : "No doctor assigned"));
+                        System.out.println("Assigned Doctor ID: " + office.getDoctor().getDoctorId());
                     } else {
                         System.out.println("Office not found.");
                     }
                     break;
+
                 case 3:
-//                    updateOffice(officeService, doctorService, scanner);
+                    // Update Office
                     System.out.print("Enter Office ID to update: ");
                     officeId = scanner.nextInt();
-                    scanner.nextLine(); // Consume newline
+                    scanner.nextLine();
 
                     office = officeService.getOfficeById(officeId);
                     if (office == null) {
                         System.out.println("Office not found.");
-                        return;
+                        break;
                     }
 
-                    System.out.print("Enter New Office Location: ");
+                    System.out.print("Enter new location: ");
                     office.setLocation(scanner.nextLine());
-                    System.out.print("Enter New Office Phone: ");
+                    System.out.print("Enter new phone number: ");
                     office.setPhone(scanner.nextLine());
 
-                    System.out.print("Enter New Doctor ID to assign: ");
-                    scanner.nextLine(); // Consume newline
+                    System.out.print("Enter new Doctor ID to assign: ");
+                    doctorId = scanner.nextInt();
+                    scanner.nextLine();
 
                     doctor = doctorService.getDoctorById(doctorId);
                     if (doctor == null) {
-                        System.out.println("Doctor with ID " + doctorId + " not found. Keeping current assignment.");
-                    } else {
-                        office.setDoctor(doctor);
+                        System.out.println("Doctor not found. Cannot reassign office.");
+                        break;
                     }
 
+                    office.setDoctor(doctor);
                     officeService.updateOffice(office);
-                    System.out.println("Office updated successfully!");
-
+                    System.out.println("Office updated successfully.");
                     break;
-                case 4:
-                    //deleteOffice(officeService, scanner);
 
+                case 4:
+                    // Delete Office
                     System.out.print("Enter Office ID to delete: ");
-                    int officeId = scanner.nextInt();
-                    scanner.nextLine(); // Consume newline
+                    officeId = scanner.nextInt();
+                    scanner.nextLine();
 
                     officeService.deleteOffice(officeId);
-                    System.out.println("Office deleted successfully!");
+                    System.out.println("Office deleted successfully.");
                     break;
-                case 5:
-                    //listAllOffices(officeService);
 
-                    System.out.println("\n🔍 Listing All Offices:");
-                    for (Office office : officeService.getAllOffices()) {
-                        System.out.println("ID: " + office.getOfficeId() + " | Location: " + office.getLocation() + " | Phone: " + office.getPhone() +
-                                " | Assigned Doctor: " + (office.getDoctor() != null ? office.getDoctor().getFirstName() + " " + office.getDoctor().getLastName() : "No doctor assigned"));
+                case 5:
+                    // List All Offices
+                    List<Office> offices = officeService.getAllOffices();
+                    if (offices.isEmpty()) {
+                        System.out.println("No offices found.");
+                    } else {
+                        System.out.println("\nList of Offices:");
+                        for (Office off : offices) {
+                            System.out.println("Office ID: " + off.getOfficeId());
+                            System.out.println("Location: " + off.getLocation());
+                            System.out.println("Phone: " + off.getPhone());
+                            System.out.println("Assigned Doctor ID: " + (off.getDoctor() != null ? off.getDoctor().getDoctorId() : "None"));
+                            System.out.println("-------------------------------------");
+                        }
                     }
                     break;
+
                 case 6:
-                    return; // Go back to main menu
+                    return;
+
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
         }
     }
-
-//    private static void createOffice(OfficeService officeService, DoctorService doctorService, Scanner scanner) {
-//        System.out.print("Enter Office Location: ");
-//        String location = scanner.nextLine();
-//        System.out.print("Enter Office Phone: ");
-//        String phone = scanner.nextLine();
-//
-//        System.out.print("Enter Doctor ID to assign this office: ");
-//        int doctorId = scanner.nextInt();
-//        scanner.nextLine(); // Consume newline
-//
-//        Doctor doctor = doctorService.getDoctorById(doctorId);
-//        if (doctor == null) {
-//            System.out.println("Doctor with ID " + doctorId + " not found. Cannot create office.");
-//            return;
-//        }
-//
-//        Office office = new Office();
-//        office.setLocation(location);
-//        office.setPhone(phone);
-//        office.setDoctor(doctor);
-//
-//        officeService.createOffice(office);
-//        System.out.println("Office created successfully!");
-//    }
-
-//    private static void readOffice(OfficeService officeService, Scanner scanner) {
-//        System.out.print("Enter Office ID: ");
-//        int officeId = scanner.nextInt();
-//        scanner.nextLine(); // Consume newline
-//
-//        Office office = officeService.getOfficeById(officeId);
-//        if (office != null) {
-//            System.out.println("🔍 Office Details:");
-//            System.out.println("ID: " + office.getOfficeId());
-//            System.out.println("Location: " + office.getLocation());
-//            System.out.println("Phone: " + office.getPhone());
-//            System.out.println("Assigned Doctor: " + (office.getDoctor() != null ? office.getDoctor().getFirstName() + " " + office.getDoctor().getLastName() : "No doctor assigned"));
-//        } else {
-//            System.out.println("Office not found.");
-//        }
-//    }
-
-//    private static void updateOffice(OfficeService officeService, DoctorService doctorService, Scanner scanner) {
-//        System.out.print("Enter Office ID to update: ");
-//        int officeId = scanner.nextInt();
-//        scanner.nextLine(); // Consume newline
-//
-//        Office office = officeService.getOfficeById(officeId);
-//        if (office == null) {
-//            System.out.println("Office not found.");
-//            return;
-//        }
-//
-//        System.out.print("Enter New Office Location: ");
-//        office.setLocation(scanner.nextLine());
-//        System.out.print("Enter New Office Phone: ");
-//        office.setPhone(scanner.nextLine());
-//
-//        System.out.print("Enter New Doctor ID to assign: ");
-//        int doctorId = scanner.nextInt();
-//        scanner.nextLine(); // Consume newline
-//
-//        Doctor doctor = doctorService.getDoctorById(doctorId);
-//        if (doctor == null) {
-//            System.out.println("Doctor with ID " + doctorId + " not found. Keeping current assignment.");
-//        } else {
-//            office.setDoctor(doctor);
-//        }
-//
-//        officeService.updateOffice(office);
-//        System.out.println("Office updated successfully!");
-//    }
-
-//    private static void deleteOffice(OfficeService officeService, Scanner scanner) {
-//        System.out.print("Enter Office ID to delete: ");
-//        int officeId = scanner.nextInt();
-//        scanner.nextLine(); // Consume newline
-//
-//        officeService.deleteOffice(officeId);
-//        System.out.println("Office deleted successfully!");
-//    }
-
-//    private static void listAllOffices(OfficeService officeService) {
-//        System.out.println("\n🔍 Listing All Offices:");
-//        for (Office office : officeService.getAllOffices()) {
-//            System.out.println("ID: " + office.getOfficeId() + " | Location: " + office.getLocation() + " | Phone: " + office.getPhone() +
-//                    " | Assigned Doctor: " + (office.getDoctor() != null ? office.getDoctor().getFirstName() + " " + office.getDoctor().getLastName() : "No doctor assigned"));
-//        }
-//    }
 }
