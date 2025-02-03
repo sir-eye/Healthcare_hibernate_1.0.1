@@ -1,6 +1,7 @@
 package healthcare.model;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "Patients")
@@ -26,11 +27,11 @@ public class Patient {
     @Column(name = "PhoneNumber")
     private String phoneNumber;
 
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Appointment> appointments; // Corrected mapping
 
-    public Patient() {
-    }
+    public Patient() {}
 
-    // Parameterized constructor for convenience
     public Patient(String firstName, String lastName, String dateOfBirth, String email, String phoneNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -38,7 +39,6 @@ public class Patient {
         this.email = email;
         this.phoneNumber = phoneNumber;
     }
-
 
     public int getPatientId() {
         return patientId;
@@ -88,15 +88,11 @@ public class Patient {
         this.phoneNumber = phoneNumber;
     }
 
-    @Override
-    public String toString() {
-        return "Patient{" +
-                "patientId=" + patientId +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", dateOfBirth='" + dateOfBirth + '\'' +
-                ", email='" + email + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                '}';
+    public List<Appointment> getAppointments() {
+        return appointments;
+    }
+
+    public void setAppointments(List<Appointment> appointments) {
+        this.appointments = appointments;
     }
 }
