@@ -3,10 +3,7 @@
 Contributors
 This project was developed by the following team members:
 
-Jacob Moore
-Sailaja P.
-Steven Wu
-Daniel Noa
+Jacob Moore - Sailaja P. - Steven Wu - Daniel Noa
 
 ## Overview
 
